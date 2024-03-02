@@ -1,0 +1,520 @@
+<template>
+  <div class="container">
+    <div class="row">
+      <p class="headline">开启智能支付管理新体验</p>
+    </div>
+    <div class="row">
+      <div class="description">
+        <p><span class="yellow">方便、快捷、高效</span><span class="black">于一体的支付系统</span></p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="list-item-container">
+        <ul class="list">
+          <li class="list-item">实现各个支付方式统一管理</li>
+          <li class="list-item">处理线上异常交易订单</li>
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class=" list-item-container-2">
+        <ul class="list-2">
+          <li class="list-item">实现可视化检测</li>
+          <li class="list-item">实现电子对账</li>
+        </ul>
+      </div>
+    </div>
+    <div id="app">
+      <!-- 其他元素 -->
+      <router-view></router-view>
+
+      <!-- 其他元素 -->
+            <div class="form-container">
+              <h1>欢迎来到</h1>
+              <br><br/>
+              <h2>德晟支付管理平台</h2>
+
+              <div class="button-group">
+                <div class="button-container">
+                  <button
+                      type="link"
+                      @click="setLoginMethod('password')"
+                  >账户密码登录</button>
+                  <div class="underline" v-if="loginMethod === 'password'"></div>
+                </div>
+
+                <div class="button-container">
+                  <button
+                      type="link"
+                      @click="setLoginMethod('phone')"
+                  >手机号登录</button>
+                  <div class="underline" v-if="loginMethod === 'phone'"></div>
+                </div>
+              </div>
+              <br>
+              <div v-if="loginMethod === 'password'">
+                <el-form :model="form" :rules="rules"  ref="userForm">
+                  <!--<input v-model:value="form.username" placeholder="请输入账号" size="large">
+                  <template #prefix>
+                    <UserOutlined style="color: rgba(0, 0, 0, 0.25)"/>
+                  </template>
+                  </input>-->
+                  <el-form-item label="" prop="username">
+                    <el-input v-model="form.username" placeholder="请输入账号" prefix-icon="el-icon-user"></el-input>
+                  </el-form-item>
+                  <el-form-item label="" prop="password">
+                    <el-input type="password" v-model="form.password" placeholder="请输入新密码" prefix-icon="el-icon-lock"></el-input>
+                  </el-form-item>
+                </el-form>
+                <!--<form>
+                  <password v-model:value="form.password" placeholder="请输入新密码" size="large">
+                    <template #prefix>
+                      <LockOutlined style="color: rgba(0, 0, 0, 0.25)"/>
+                    </template>
+                  </password>
+                </form>-->
+
+                <br>
+                <button type="primary" @click="login" class="login-button" :disabled="!checked">登录</button>
+                <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+              </div>
+
+              <div v-if="loginMethod === 'phone'">
+                <el-form :model="form" :rules="rules"  ref="userForm">
+                  <el-form-item label="" prop="phoneNumber">
+                    <el-input v-model="form.phoneNumber" placeholder="请输入手机号" prefix-icon="el-icon-mobile-phone">
+                      <template #append>
+                        <el-button @click="handleGetVerificationCode" type="primary" size="small">获取验证码</el-button>
+                      </template>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item label="" prop="verificationCode">
+                    <el-input v-model="form.verificationCode" placeholder="请输入验证码" suffix-icon="el-icon-message"></el-input>
+                  </el-form-item>
+                </el-form>
+                <br>
+
+                <button type="primary" @click="login" class="login-button" :disabled="!checked">登录</button>
+                <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+              </div>
+
+
+
+              <div class="forgot-password-container">
+                <router-link to="/forgotPassword" class="link">忘记密码</router-link>
+              </div>
+
+              <div class="register-container">
+                <router-link to="/register" class="link">注册账户</router-link>
+              </div>
+
+              <div class="check-container">
+                <input type="checkbox" v-model:checked="checked">
+                  同意
+                  <a href="/user-agreement">用户协议</a>
+                  和
+                  <a href="/privacy-policy">隐私协议</a>
+              </div>
+
+            </div>
+    </div>
+
+
+
+    <div>
+      <div class="logo">
+        <img src="../assets/logo.png" alt="徳晟图标">
+      </div>
+    </div>
+    <div>
+      <p class="copyright">copyright 2023徳晟光电股份有限公司版权所有 粤ICP备 </p>
+    </div>
+  </div>
+
+
+
+</template>
+
+<script>
+import { ref } from 'vue';
+import { RouterLink } from 'vue-router';
+document.body.style.overflow = 'hidden';
+// 导入 Home 组件
+
+export default {
+  name: 'App',
+  // 在 components 属性中注册 Home 组件
+  components: {
+    RouterLink
+  },
+  setup() {
+    const loginMethod = ref('password');
+    const input1 = ref('');
+    const password = ref('');
+    const phoneNumber = ref('');
+    const verificationCode = ref('');
+    const checked = ref(true);
+    const errorMessage = ref('');
+
+    function setLoginMethod(method) {
+      loginMethod.value = method;
+    }
+
+    return {
+      loginMethod,
+      input1,
+      password,
+      phoneNumber,
+      verificationCode,
+      checked,
+      // checked: false, // 用户协议勾选状态
+      setLoginMethod,
+      errorMessage,
+    };
+  },
+  data() {
+    return {
+      form: {
+        username: 'admin',
+        password: '123',
+        confirmPassword: '',
+        phoneNumber: '',
+        verificationCode: '',
+      },
+      rules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'change' },
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'change' },
+        ],
+        confirmPassword: [
+          { required: true, message: '请确认密码', trigger: 'change' },
+          { validator: this.validateConfirmPassword, trigger: 'change' },
+        ],
+        phoneNumber: [
+          { required: true, message: '请输入手机号', trigger: 'change' },
+        ],
+        verificationCode: [
+          { required: true, message: '请输入验证码', trigger: 'change' },
+        ],
+      },
+      successModalVisible: false,
+    };
+  },
+  methods: {
+    async login() {
+      //发送登录请求
+      console.log('开始发送登录请求');
+      console.log("方法："+this.loginMethod);
+
+      // 创建一个对象，它将被发送到服务器作为登录请求的一部分
+      let loginPayload = {};
+      console.log(loginPayload);
+      if (this.loginMethod === 'password') {
+        loginPayload = {
+          username: this.form.username,
+          password: this.form.password,
+        };
+      } else {
+        loginPayload = {
+          countryCode: this.form.countryCode,
+          phoneNumber: this.form.phoneNumber,
+          verificationCode: this.form.verificationCode,
+        };
+      }
+      console.log(loginPayload);
+
+      // 发送请求判断是否登陆成功
+      this.$refs['userForm'].validate((valid) => {
+        if (valid) {  // 表单校验合法
+          //发送请求
+          this.$Loading("登录中...")
+          this.request.post("/login", this.form).then(res => {
+            this.$Loading.close()
+            if (res.code !== 200) {
+              this.$message.error("用户名或密码错误")
+            } else {
+              localStorage.setItem("user",JSON.stringify(res.data.user))
+              localStorage.setItem("token",JSON.stringify(res.data.token))
+              localStorage.setItem("menus",JSON.stringify(res.data.menus))
+              this.$router.replace("/home")
+              // this.$router.go(0)//登录之后：支付案例菜单的功能样式有问题，刷新后恢复正常，但登出后再次登录不跳转
+              this.$message.success("登录成功")
+              console.log("登录成功...")
+            }
+          })
+        } else {
+          console.log("valid=="+valid);
+          return false;
+        }
+      });
+    },
+    onSubmit() {
+      this.successModalVisible = true;
+    },
+    validateConfirmPassword(rule, value, callback) {
+      if (value && value !== this.form.password) {
+        callback(new Error('两次输入的密码不一致'));
+      } else {
+        callback();
+      }
+    },
+    handleGetVerificationCode() {
+      // Implement your logic to get the verification code
+    },
+    redirectToLogin() {
+      this.successModalVisible = false;
+      this.$router.push('/home');
+    },
+  },
+}
+</script>
+
+<style>
+element.style {
+  overflow: hidden;
+}
+.container {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-image: url('../assets/bg1.png');
+  background-size: cover; /* 调整背景图片的大小以填充容器 */
+  background-position: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.row {
+  display: flex; /* 使用弹性盒子布局 */
+  box-sizing: border-box; /* 这一行和下面几行是新添加的 */
+}
+
+.list-item-container{
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  position: fixed;
+  left: 63.26vw;
+  top: 26.13vh;
+  box-sizing: border-box; /* 这一行和下面几行是新添加的 */
+}
+
+
+.list-item {
+  display: flex; /* 将段落内容设置为弹性盒子布局 */
+  align-items: center; /* 垂直居中 */
+  margin: 0; /* 移除段落的默认边距 */
+  padding-left: 1.39vw; /* 调整左边距以留出空间放置大圆点 */
+  position: relative; /* 设置相对定位 */
+  width: 15.35vw;
+  height: 1.97vh;
+  font-family: MicrosoftYaHei;
+  font-size: 0.83vw;
+  color: #1C295F;
+  letter-spacing: 0.01vw;
+  box-sizing: border-box; /* 这一行和下面几行是新添加的 */
+
+}
+
+.list-item-container-2 {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  position: fixed;
+  left: 86.39vw;
+  top: 26.13vh;
+}
+
+.list-item::before {
+  content: "•"; /* 使用伪元素添加大圆点 */
+  position: relative; /* 设置绝对定位 */
+  left: 0; /* 将大圆点放置在段落最左边 */
+  margin-right: 0.69vw; /* 调整大圆点与文本的间距 */
+}
+
+.list-item-inline {
+  display: inline-block;
+}
+
+
+.list-item {
+  margin-bottom: 20px;
+}
+
+.headline {
+  position: fixed;
+  left: 67.36vw; /* 将像素值转换为vw单位 */
+  top: 12.93vh; /* 将像素值转换为vh单位 */
+  width: 21.46vw; /* 将像素值转换为vw单位 */
+  height: 3.87vh; /* 将像素值转换为vh单位 */
+  font-family: MicrosoftYaHei-Bold;
+  font-weight: 700;
+  font-size: 1.53vw; /* 将像素值转换为vw单位 */
+  color: #1C295F;
+  letter-spacing: 0.16vw; /* 将像素值转换为vw单位 */
+  box-sizing: border-box; /* 这一行和下面几行是新添加的 */
+}
+.description {
+  position: fixed;
+  left: 69.65vw;
+  top: 20.13vh;
+}
+.yellow {
+  color: #ff7f00ff;
+  font-size: 14px;
+  font-face: [object Object];
+  font-weight: 0;
+  line-height: 0;
+  letter-spacing: 1.12px;
+  paragraph-spacing: 0;
+  text-align: left;
+}
+
+.black {
+  color: #1c295fff;
+  font-size: 14px;
+  font-face: [object Object];
+  font-weight: 0;
+  line-height: 0;
+  letter-spacing: 1.12px;
+  paragraph-spacing: 0;
+  text-align: left;
+}
+.logo {
+  position: fixed;
+  top: 43px;
+  left: 66px;
+  width: 186px;
+  height: 65px;
+}
+.copyright {
+  left: 9.44vw;
+  top: 93.6vh;
+  position: fixed;
+  width: 322px;
+  height: 20px;
+  font-family: PingFangSC-Regular;
+  font-weight: 400;
+  font-size: 12px;
+  color: #00000073;
+  line-height: 20px;
+}
+
+/*详细页面样式*/
+
+
+/*222*/
+h1{
+  top: 142px;
+  left: 78px;
+  position: fixed;
+  margin: 0;
+  width: 147px;
+  height: 45px;
+  font-family: MicrosoftYaHei-Bold;
+  font-weight: 700;
+  font-size: 34px;
+  color: #333333;
+  letter-spacing: 2.72px;
+}
+h2{
+  left: 78px;
+  top: 192px;
+  position: fixed;
+  margin: 0;
+  width: 303px;
+  height: 37px;
+  font-family: MicrosoftYaHei-Bold;
+  font-weight: 700;
+  font-size: 28px;
+  color: #333333;
+  letter-spacing: 2.24px;
+}
+
+.login-button{
+  width: 202px;
+  height: 49px;
+  background: #1890FF;
+  box-shadow: 0 2px 13px 3px #1890ff4a;
+  border-radius: 30px;
+  left: 78px;
+  top: 533px;
+  position: fixed;
+}
+
+.forgot-password-container {
+  left: 394px;
+  top: 490px;
+  position: fixed;
+  margin-top: 20px;
+}
+
+.register-container {
+  left: 394px;
+  top: 553px;
+  position: fixed;
+  margin-top: 10px;
+}
+.check-container{
+  left: 78px;
+  top: 604px;
+  position: fixed;
+}
+.link {
+  font-size: 14px;
+  color: #1890FF;
+  text-decoration: none;
+}
+.error-message {
+  color: #ff0000;
+  left: 78px;
+  top: 490px;
+  position: fixed;
+}
+.button-group {
+  position: fixed;
+  left: 61px;
+  top: 260px;
+  display: flex;
+  justify-content: space-between;
+}
+
+
+.button-container {
+  position: relative;
+  margin-right: 100px;
+}
+
+.underline {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 131px;
+  height: 2px;
+  background-color: #1890ff;
+}
+.form-container {
+  position: fixed;
+  top: 276px;
+  left: 38px;
+  width: 380px;
+  height: 60px;
+}
+.error-message {
+  color: red;
+}
+
+.wrapper {
+  height: 100vh;
+  background-image: linear-gradient(to bottom right, #FC466B, #3F5EFB);
+  overflow: hidden;
+}
+
+</style>
+
+
+

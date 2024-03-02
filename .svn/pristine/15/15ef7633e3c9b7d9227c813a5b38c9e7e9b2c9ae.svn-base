@@ -1,0 +1,20 @@
+# 微信支付相关参数
+# 商户号
+wxpay.mch-id=1600700474
+# 商户API证书序列号
+wxpay.mch-serial-no=565C8E0A8B4219407374DE4142C2C22922AE0447
+
+# 商户私钥文件
+wxpay.private-key-path=apiclient_key.pem
+# APIv3密钥
+wxpay.api-v3-key=WXzhifuDeShengGuangDian20200708P
+# APPID
+wxpay.appid=wx7b36b2ad2d5d1528
+# 微信服务器地址
+wxpay.domain=https://api.mch.weixin.qq.com
+# 接收结果通知地址
+# 注意：每次重新启动ngrok，都需要根据实际情况修改这个配置
+wxpay.notify-domain=https://3c0a-121-33-222-234.ngrok-free.app
+
+# APIv2密钥
+wxpay.partnerKey: WXzhifuDeShengGuangDian20200708P

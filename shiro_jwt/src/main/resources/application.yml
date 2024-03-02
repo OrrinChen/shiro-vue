@@ -1,0 +1,76 @@
+server:
+  port: 9292
+spring:
+  application:
+    name: shiro_jwt
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/payment_demo?serverTimezone=Asia/Shanghai&userUnicode=true&useSSL=false
+    username: root
+    password: root
+  redis:
+    # Redis服务器地址
+    host: 127.0.0.1
+    # Redis服务器端口号
+    port: 6379
+    # 使用的数据库索引，默认是0
+    database: 0
+    # 连接超时时间
+    timeout: 1800000
+    # 设置密码
+    password: "root"
+    lettuce:
+      pool:
+        # 最大阻塞等待时间，负数表示没有限制
+        max-wait: -1
+        # 连接池中的最大空闲连接
+        max-idle: 5
+        # 连接池中的最小空闲连接
+        min-idle: 0
+        # 连接池中最大连接数，负数表示没有限制
+        max-active: 20
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml,classpath:com/atguigu/paymentdemo/mapper/xml/*.xml
+#  mapper-location: classpath:com/atguigu/paymentdemo/mapper/xml/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+jwt:
+  expire: 300 #秒
+  secret: jwt+shiro
+  refreshtoken-expire: 600 #秒
+
+file:
+  upload:
+    path: E:\Java\springboot-vue\image\shiro_jwt_file\
+
+##微信支付
+#server:
+#  port: 9191 #服务端口
+
+#spring:
+#  application:
+#    name: payment-demo #应用的名字
+
+#  jackson:
+#    date-format: yyyy-MM-dd HH:mm:ss
+#    time-zone: GMT+8
+
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/payment_demo?serverTimezone=GMT%2B8&characterEncoding=utf-8
+#    username: root
+#    password: root
+
+
+
+logging:
+  level:
+    root: info
